@@ -339,6 +339,18 @@ tf_kernel_library(
 )
 
 tf_kernel_library(
+    name = "sampling_dataset_op",
+    srcs = ["sampling_dataset_op.cc"],
+    deps = [
+        ":dataset",
+        "//tensorflow/core:dataset_ops_op_lib",
+        "//tensorflow/core:framework",
+        "//tensorflow/core:lib",
+        "//tensorflow/core:lib_internal",
+    ],
+)
+
+tf_kernel_library(
     name = "take_dataset_op",
     srcs = ["take_dataset_op.cc"],
     deps = [
@@ -632,6 +644,7 @@ tf_kernel_library(
         ":stats_aggregator_dataset_op",
         ":stats_aggregator_ops",
         ":stats_dataset_ops",
+        ":sampling_dataset_op",
         ":take_dataset_op",
         ":tensor_dataset_op",
         ":tensor_queue_dataset_op",

@@ -724,6 +724,18 @@ class Dataset(object):
     """
     return TakeDataset(self, count)
 
+  def sampling(self, rate):
+    """Creates a `Dataset` that samples with sample rate of 'rate' from this dataset.
+
+    Args:
+      rate: A `tf.float32` scalar `tf.Tensor`, representing the sample rate
+        of this dataset that should be taken to form the new dataset.
+
+    Returns:
+      Dataset: A `Dataset`.
+    """
+    return SamplingDataset(self, rate)
+
   def skip(self, count):
     """Creates a `Dataset` that skips `count` elements from this dataset.
 
@@ -1855,6 +1867,34 @@ class ShuffleDataset(Dataset):
         seed=self._seed,
         seed2=self._seed2,
         reshuffle_each_iteration=self._reshuffle_each_iteration,
+        **flat_structure(self))
+
+  @property
+  def output_classes(self):
+    return self._input_dataset.output_classes
+
+  @property
+  def output_shapes(self):
+    return self._input_dataset.output_shapes
+
+  @property
+  def output_types(self):
+    return self._input_dataset.output_types
+
+
+class SamplingDataset(Dataset):
+  """A `Dataset` sample from its input with sample rate of `rate`."""
+
+  def __init__(self, input_dataset, rate):
+    """See `Dataset.sample()` for details."""
+    super(SamplingDataset, self).__init__()
+    self._input_dataset = input_dataset
+    self._rate = ops.convert_to_tensor(rate, dtype=dtypes.float32, name="rate")
+
+  def _as_variant_tensor(self):
+    return gen_dataset_ops.sampling_dataset(
+        self._input_dataset._as_variant_tensor(),  # pylint: disable=protected-access
+        rate=self._rate,
         **flat_structure(self))
 
   @property
